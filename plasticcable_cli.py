@@ -1,4 +1,8 @@
-import psutil, sqlite3, os, time, base64, socket, datetime
+#!/usr/bin/python
+import psutil, sqlite3, os, time, base64, socket, signal, datetime 
+
+signal.signal(signal.SIGINT, signal.SIG_DFL) #So we can Ctrl+C out
+
 DEBUG=False
 def debugPrint(str):
   if(DEBUG):
