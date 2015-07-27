@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import psutil, sqlite3, os, time, base64, socket, signal, datetime 
+import psutil, sqlite3, os, time, base64, socket, signal, datetime, ctypes 
 
 signal.signal(signal.SIGINT, signal.SIG_DFL) #So we can Ctrl+C out
 
@@ -8,6 +8,14 @@ def debugPrint(str):
   if(DEBUG):
     print str
 
+#https://stackoverflow.com/questions/1026431/cross-platform-way-to-check-admin-rights-in-a-python-script-under-windows
+def isAdmin(): 
+  try:
+    is_admin = os.geteuid() == 0
+  except AttributeError:
+    is_admin = ctypes.windll.shell32.IsUserAnAdmin() != 0
+  return is_admin
+      
 def printConnections():
   print "psutil.net_connections()="
   for connection in psutil.net_connections(): 
@@ -69,7 +77,8 @@ def buildDatabase():
 	try: #if pid is still None this will throw an error
 	  pid = int(connectionstring[index+4:-1])
 	except Exception, e:
-	    pass
+	    break
+	    #pass
 	process = psutil.Process(pid)
 	path = "<Access denied>"
 	name = str(process.name())
@@ -89,7 +98,7 @@ def buildDatabase():
 	debugPrint   ("DEBUG-buildDatabase()sqlreturned.rowcount="+str(rowcount))
 	if rowcount == 0:
 	  date = str(datetime.datetime.now())
-	  print  date+"- New application found:"+name+" at "+path+", adding to database\n"
+	  print  date+" - New application found:"+name+" at "+path+", adding to database"
 	  destinationport =  "<?>"
 	  try:
 	    destinationport = str(connection[4][1]) 
@@ -133,7 +142,9 @@ def printDatabase():
     conn.close()
         
 if __name__ == "__main__":
-  print  "start" 
+  debugPrint("DEBUG - start") 
+  if not isAdmin():
+     print "Not running with root rights, might miss some socket connections!"
   firstStart = False
   if not(os.path.isfile('plasticcable.db')):
         debugPrint  ("DEBUG-plasticcable.db does not exist.")
@@ -155,6 +166,7 @@ if __name__ == "__main__":
     print "Database created successfully.";
     conn.close()
   #print str(datetime.datetime.now())
+  print "Monitoring socket connections."
   while(True):
   #printConnections()
     buildDatabase()
