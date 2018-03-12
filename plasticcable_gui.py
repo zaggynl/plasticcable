@@ -2,6 +2,10 @@
 from PyQt4 import QtGui, QtCore
 import sys, sqlite3, os, signal, time
 
+#to import PyQt4:
+#https://stackoverflow.com/a/22651895
+#pip install PyQt4-4.11.4-cp36-cp36m-win_amd64.whl
+
 signal.signal(signal.SIGINT, signal.SIG_DFL) #So we can Ctrl+C out
 
 updateTimer = QtCore.QTimer()
@@ -9,7 +13,7 @@ updateTimer = QtCore.QTimer()
 DEBUG=False
 def debugPrint(str):
   if(DEBUG):
-    print str
+    print(str)
     
 #thanks qt creator!
 try:
@@ -143,23 +147,23 @@ def loadDatabase():
       queryresult =  sqlreturned.fetchall()
       rowcount = len(queryresult)
       conn.close()
-    except Exception, e:
+    except Exception as e:
       try:
-	conn.close()
-      except Exception, e2:
-	pass
-      exit("Error:"+str(e))
+        conn.close()
+      except Exception as e2:
+        pass
+        exit("Error:"+str(e))
     debugPrint  ("DEBUG-sqlreturned.rowcount="+str(rowcount))
     if rowcount > 0:
       viewmodel = QtGui.QStandardItemModel()
  
       for row in queryresult:
-	row = list(row)
-	row2 = []
-	for item in row:
-	  item = QtGui.QStandardItem(item)
-	  row2.append(item)
-	viewmodel.appendRow(row2)
+        row = list(row)
+        row2 = []
+        for item in row:
+          item = QtGui.QStandardItem(item)
+          row2.append(item)
+        viewmodel.appendRow(row2)
       main_window.treeView.setModel(viewmodel)
       viewmodel.setHeaderData(0, QtCore.Qt.Horizontal, "NAME")
       viewmodel.setHeaderData(1, QtCore.Qt.Horizontal, "PATH")
@@ -170,7 +174,7 @@ def loadDatabase():
       viewmodel.setHeaderData(6, QtCore.Qt.Horizontal, "DATE") 
       main_window.treeView.sortByColumn(6) #sort by date
     else:
-      QtGui.QMessageBox.information(main_window, "Database message", "Database is empty, did you run plasticcable_cli.py yet?")
+            QtGui.QMessageBox.information(main_window, "Database message", "Database is empty, did you run plasticcable_cli.py yet?")
     
             
 if __name__ == "__main__":
