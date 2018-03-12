@@ -138,7 +138,7 @@ def loadDatabase():
   #while(True):
     if not(os.path.isfile('plasticcable.db')):
       QtGui.QMessageBox.warning(main_window, "Error", "Error: database file \'plasticcable.db\' missing")
-      os.exit(1)
+      sys.exit(1)
     try:
       debugPrint ("DEBUG-loadDatabase()")
       conn = sqlite3.connect('plasticcable.db')
